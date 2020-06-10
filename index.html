@@ -16,7 +16,14 @@
       const form = document.getElementById('registration')
       form.addEventListener('submit', event => {
         event.preventDefault()
-        fetch('http://localhost:9000/session', {
+        
+        let url = 'https://hardcore-neumann-96484a.netlify.app/.netlify/functions/session'
+
+        if(location.hostname == 'localhost') {
+          url = 'http://localhost:9000/session'
+        }
+
+        fetch(url, {
           method: 'POST',
           body: JSON.stringify({ name: form.elements.name.value })
         }).then(res => res.json()).then(res => {
