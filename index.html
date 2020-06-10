@@ -1,0 +1,35 @@
+<html>
+  <head></head>
+  <body>
+    <form id="registration">
+      <input type="text" name="name" required placeholder="Please enter a room name">
+      <button>Enter</button>
+    </form>
+    <div id="call">
+      <div id="subscribers"></div>
+      <div id="publishers"></div>
+    </div>
+
+    <script src="https://static.opentok.com/v2/js/opentok.min.js"></script>
+
+    <script>
+      const form = document.getElementById('registration')
+      form.addEventListener('submit', event => {
+        event.preventDefault()
+        fetch('http://localhost:9000/session', {
+          method: 'POST',
+          body: JSON.stringify({ name: form.elements.name.value })
+        }).then(res => res.json()).then(res => {
+          const session = OT.initSession(res.apiKey, res.sessionId)
+          const publisher = OT.initPublisher("publishers")
+          session.connect(res.token, () => {
+            session.publish(publisher)
+          })
+          session.on('streamCreated', event => {
+            session.subscribe(event.stream, "subscribers")
+          })
+        })
+      })
+    </script>
+  </body>
+</html>
